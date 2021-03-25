@@ -5,7 +5,7 @@
 <span class=split>·</span>
 <span>172 words</span>
 <span class=split>·</span>
-<span>1 minute read</span></div><div class=content><p>Error: mount <code>proc</code> to <code>/proc</code>: Operation not permitted: OCI permission denied</p><p>Following the install instructions at <a href=https://podman.io/getting-started/installation>https://podman.io/getting-started/installation</a> you will probably run into this error</p><pre><code>podman run --rm 2f4357dd9647 /bin/echo &quot;fubar&quot;
+<span>1 minute read</span></div><div class=content><p>Error: mount proc to /proc: Operation not permitted: OCI permission denied</p><p>Following the install instructions at <a href=https://podman.io/getting-started/installation>https://podman.io/getting-started/installation</a> you will probably run into this error</p><pre><code>podman run --rm 2f4357dd9647 /bin/echo &quot;fubar&quot;
 Error: mount `proc` to `/proc`: Operation not permitted: OCI permission denied
 </code></pre><p>Why is that? Because there are lxcfs mount points below /proc</p><pre><code>findmnt -R /proc --output &quot;TARGET,SOURCE,FSTYPE&quot;
     
