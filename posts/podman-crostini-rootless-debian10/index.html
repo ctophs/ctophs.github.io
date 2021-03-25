@@ -3,7 +3,7 @@
 <a href=/tags>Tags</a>
 <a href=/about>About</a></nav><main class=main><section id=single><h1 class=title>podman rootless in ChromeOS/Crostini</h1><div class=tip><span>Mar 24, 2021 15:17</span>
 <span class=split>·</span>
-<span>171 words</span>
+<span>172 words</span>
 <span class=split>·</span>
 <span>1 minute read</span></div><div class=content><p>Error: mount <code>proc</code> to <code>/proc</code>: Operation not permitted: OCI permission denied</p><p>Following the install instructions at <a href=https://podman.io/getting-started/installation>https://podman.io/getting-started/installation</a> you will probably run into this error</p><pre><code>podman run --rm 2f4357dd9647 /bin/echo &quot;fubar&quot;
 Error: mount `proc` to `/proc`: Operation not permitted: OCI permission denied
@@ -22,7 +22,7 @@ TARGET                     SOURCE                    FSTYPE
 TARGET SOURCE FSTYPE OPTIONS
 /proc  proc   proc   rw,nosuid,nodev,noexec,relatime
 </code></pre><p>and in order to make that change in the user namespace aswell you can tell podman to redo the namespace this way</p><pre><code>podman system migrate
-</code></pre><p>to test that you do</p><pre><code>❯ podman unshare # join namespacec
+</code></pre><p>to test that you do</p><pre><code>❯ podman unshare # join user namespace
 
 user in ~
 ❯ findmnt -R /proc # check from within
