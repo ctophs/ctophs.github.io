@@ -1,0 +1,15 @@
+baseURL: "https://ctophs.github.io/"
+languageCode: "en-us"
+title: "Site"
+theme: "mini"
+paginate: 3
+markup:
+  highlight:
+    guessSyntax: true
+    style: emacs
+#summaryLength: 50
+social:
+  github: https://github.com/ctophs
+params:
+  author: Christoph Sievers
+  description: blog
