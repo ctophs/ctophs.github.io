@@ -1,0 +1,41 @@
+<!doctype html><html lang=en-us><head><title>Using rootless podman in ChromeOS/Crostini/Debian 10 | Site</title><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,minimum-scale=1"><meta name=description content="First things first: You will have to become root once every termina reboot
+Following the install instructions at https://podman.io/getting-started/installation you will probably run into this error
+podman run --rm 2f4357dd9647 /bin/echo &#34;fubar&#34; Error: mount `proc` to `/proc`: Operation not permitted: OCI permission denied  Why is that? Because there are lxcfs mount points below /proc
+findmnt -R /proc TARGET SOURCE FSTYPE OPTIONS /proc proc proc rw,nosuid,nodev,noexec,relatime ├─/proc/cpuinfo lxcfs[/proc/cpuinfo] fuse.lxcfs rw,nosuid,nodev,relatime,user_id=0,group_id=0,allow_other ├─/proc/diskstats lxcfs[/proc/diskstats] fuse."><meta name=generator content="Hugo 0.82.0"><meta name=ROBOTS content="NOINDEX, NOFOLLOW"><link rel=stylesheet href=/css/style.css><link rel="shortcut icon" href=/images/favicon.ico type=image/x-icon></head><body><nav class=navigation><a href=/><span class=arrow>←</span>Home</a>
+<a href=/posts>Archive</a>
+<a href=/tags>Tags</a>
+<a href=/about>About</a></nav><main class=main><section id=single><h1 class=title>Using rootless podman in ChromeOS/Crostini/Debian 10</h1><div class=tip><span>Mar 24, 2021 15:17</span>
+<span class=split>·</span>
+<span>179 words</span>
+<span class=split>·</span>
+<span>1 minute read</span></div><div class=content><p>First things first: You will have to become root once every termina reboot</p><p>Following the install instructions at <a href=https://podman.io/getting-started/installation>https://podman.io/getting-started/installation</a> you will probably run into this error</p><pre><code>podman run --rm 2f4357dd9647 /bin/echo &quot;fubar&quot;
+Error: mount `proc` to `/proc`: Operation not permitted: OCI permission denied
+</code></pre><p>Why is that? Because there are lxcfs mount points below /proc</p><pre><code>findmnt -R /proc
+
+TARGET                     SOURCE                    FSTYPE     OPTIONS
+/proc                      proc                      proc       rw,nosuid,nodev,noexec,relatime
+├─/proc/cpuinfo            lxcfs[/proc/cpuinfo]      fuse.lxcfs rw,nosuid,nodev,relatime,user_id=0,group_id=0,allow_other
+├─/proc/diskstats          lxcfs[/proc/diskstats]    fuse.lxcfs rw,nosuid,nodev,relatime,user_id=0,group_id=0,allow_other
+├─/proc/meminfo            lxcfs[/proc/meminfo]      fuse.lxcfs rw,nosuid,nodev,relatime,user_id=0,group_id=0,allow_other
+├─/proc/stat               lxcfs[/proc/stat]         fuse.lxcfs rw,nosuid,nodev,relatime,user_id=0,group_id=0,allow_other
+├─/proc/uptime             lxcfs[/proc/uptime]       fuse.lxcfs rw,nosuid,nodev,relatime,user_id=0,group_id=0,allow_other
+└─/proc/sys/fs/binfmt_misc proc[/sys/fs/binfmt_misc] proc       rw,nosuid,nodev,noexec,relatime
+</code></pre><p>so you can sudo umount those until you get this</p><pre><code>findmnt -R /proc
+
+TARGET SOURCE FSTYPE OPTIONS
+/proc  proc   proc   rw,nosuid,nodev,noexec,relatime
+</code></pre><p>and in order to make that change in the user namespace aswell you can tell podman to redo the namespace this way</p><pre><code>podman system migrate
+</code></pre><p>to test that you do</p><pre><code>❯ podman unshare # join namespacec
+
+user in ~ 
+❯ findmnt -R /proc # check from within
+TARGET SOURCE FSTYPE OPTIONS
+/proc  proc   proc   rw,nosuid,nodev,noexec,relatime
+
+❯ exit # get out again
+
+❯ podman run --rm 2f4357dd9647 /bin/echo &quot;fubar&quot;
+fubar
+</code></pre></div></section></main><footer id=footer><p class=copyright>© Copyright
+2021
+<span class=split><svg fill="#bbb" width="15" height="15" id="heart-15" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15"><path d="M13.91 6.75c-1.17 2.25-4.3 5.31-6.07 6.94-.1903.1718-.4797.1718-.67.0C5.39 12.06 2.26 9 1.09 6.75-1.48 1.8 5-1.5 7.5 3.45 10-1.5 16.48 1.8 13.91 6.75z"/></svg></span></p><p class=powerby>Powered by <a href=http://www.gohugo.io/>Hugo</a> Theme By <a href=https://github.com/nodejh/hugo-theme-cactus-plus>nodejh</a></p></footer></body></html>
