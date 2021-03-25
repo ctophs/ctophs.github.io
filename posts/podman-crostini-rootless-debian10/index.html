@@ -1,7 +1,4 @@
-<!doctype html><html lang=en-us><head><title>Using rootless podman in ChromeOS/Crostini/Debian 10 | Site</title><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,minimum-scale=1"><meta name=description content="First things first: You will have to become root once every termina reboot
-Following the install instructions at https://podman.io/getting-started/installation you will probably run into this error
-podman run --rm 2f4357dd9647 /bin/echo &#34;fubar&#34; Error: mount `proc` to `/proc`: Operation not permitted: OCI permission denied  Why is that? Because there are lxcfs mount points below /proc
-findmnt -R /proc TARGET SOURCE FSTYPE OPTIONS /proc proc proc rw,nosuid,nodev,noexec,relatime ├─/proc/cpuinfo lxcfs[/proc/cpuinfo] fuse.lxcfs rw,nosuid,nodev,relatime,user_id=0,group_id=0,allow_other ├─/proc/diskstats lxcfs[/proc/diskstats] fuse."><meta name=generator content="Hugo 0.82.0"><meta name=ROBOTS content="NOINDEX, NOFOLLOW"><link rel=stylesheet href=/css/style.css><link rel="shortcut icon" href=/images/favicon.ico type=image/x-icon></head><body><nav class=navigation><a href=/><span class=arrow>←</span>Home</a>
+<!doctype html><html lang=en-us><head><title>Using rootless podman in ChromeOS/Crostini/Debian 10 | Site</title><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,minimum-scale=1"><meta name=description content><meta name=generator content="Hugo 0.82.0"><meta name=ROBOTS content="NOINDEX, NOFOLLOW"><link rel=stylesheet href=/css/style.css><link rel="shortcut icon" href=/images/favicon.ico type=image/x-icon><link href=/index.xml rel=alternate type=application/rss+xml title=Site><link href=/index.xml rel=feed type=application/rss+xml title=Site></head><body><nav class=navigation><a href=/><span class=arrow>←</span>Home</a>
 <a href=/posts>Archive</a>
 <a href=/tags>Tags</a>
 <a href=/about>About</a></nav><main class=main><section id=single><h1 class=title>Using rootless podman in ChromeOS/Crostini/Debian 10</h1><div class=tip><span>Mar 24, 2021 15:17</span>
@@ -27,7 +24,7 @@ TARGET SOURCE FSTYPE OPTIONS
 </code></pre><p>and in order to make that change in the user namespace aswell you can tell podman to redo the namespace this way</p><pre><code>podman system migrate
 </code></pre><p>to test that you do</p><pre><code>❯ podman unshare # join namespacec
 
-user in ~ 
+user in ~
 ❯ findmnt -R /proc # check from within
 TARGET SOURCE FSTYPE OPTIONS
 /proc  proc   proc   rw,nosuid,nodev,noexec,relatime
