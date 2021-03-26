@@ -3,7 +3,7 @@
 <a href=/tags>Tags</a>
 <a href=/about>About</a></nav><main class=main><section id=single><h1 class=title>&lt;ChromeOS: nested, unprivileged, podman></h1><div class=tip><span>Mar 24, 2021 15:17</span>
 <span class=split>·</span>
-<span>213 words</span>
+<span>211 words</span>
 <span class=split>·</span>
 <span>1 minute read</span></div><div class=content><p>lxc config set penguin security.nesting true</p><p>using the <a href=https://podman.io/getting-started/installation target=_blank rel=noopener>install instructions
 </a>you will probably run into this error</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>podman run --rm 2f4357dd9647 /bin/echo <span style=color:#b44>&#34;fubar&#34;</span>
@@ -18,13 +18,13 @@ TARGET                     SOURCE                    FSTYPE
 ├─/proc/stat               lxcfs<span style=color:#666>[</span>/proc/stat<span style=color:#666>]</span>         fuse.lxcfs
 ├─/proc/uptime             lxcfs<span style=color:#666>[</span>/proc/uptime<span style=color:#666>]</span>       fuse.lxcfs
 └─/proc/sys/fs/binfmt_misc proc<span style=color:#666>[</span>/sys/fs/binfmt_misc<span style=color:#666>]</span> proc      
-</code></pre></div><h1 id=two-ways-to-solve-this>Two ways to solve this: <a href=#two-ways-to-solve-this class=anchor>🔗</a></h1><h2 id=1-you-can-change-the-lxd-configuration-so-that-you-wont-get-a-permission-denied-anymore>1. you can change the lxd configuration so that you won&rsquo;t get a permission denied anymore <a href=#1-you-can-change-the-lxd-configuration-so-that-you-wont-get-a-permission-denied-anymore class=anchor>🔗</a></h2><p>to do that you open crosh (ctlr+alt+t) and</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#080;font-style:italic># enter the termina vm</span>
+</code></pre></div><p>Two ways to solve this:</p><ol><li>you can change the lxd configuration so that you won&rsquo;t get a permission denied anymore</li></ol><p>to do that you open crosh (ctlr+alt+t) and</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#080;font-style:italic># enter the termina vm</span>
 vsh termina
 <span style=color:#080;font-style:italic># allow nesting containers</span>
 lxc config <span style=color:#a2f>set</span> penguin security.nesting <span style=color:#a2f>true</span>
 <span style=color:#080;font-style:italic># restart penguin lxc container</span>
 lxc restart penguin
-</code></pre></div><p>as proposed here: <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1087937">https://bugs.chromium.org/p/chromium/issues/detail?id=1087937</a></p><h2 id=2-umount>2. umount <a href=#2-umount class=anchor>🔗</a></h2><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>sudo umount /proc/<span style=color:#666>{</span>cpuinfo,diskstats,meminfo,stat,uptime<span style=color:#666>}</span>
+</code></pre></div><p>as proposed here: <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1087937">https://bugs.chromium.org/p/chromium/issues/detail?id=1087937</a></p><ol start=2><li>umount</li></ol><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>sudo umount /proc/<span style=color:#666>{</span>cpuinfo,diskstats,meminfo,stat,uptime<span style=color:#666>}</span>
 </code></pre></div><p>and in order to make that change in the user namespace aswell you can tell podman to redo the namespace this way</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>podman system migrate
 </code></pre></div><p>to test that you do</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>❯ podman unshare <span style=color:#080;font-style:italic># join user namespace</span>
 user in ~
