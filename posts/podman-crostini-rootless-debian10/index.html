@@ -10,15 +10,15 @@
 Error: mount <span style=color:#b44>`</span>proc<span style=color:#b44>`</span> to <span style=color:#b44>`</span>/proc<span style=color:#b44>`</span>: Operation not permitted: OCI permission denied
 </code></pre></div><p>Why is that? Because there are lxcfs mount points below /proc and kernel does not allow it.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>findmnt -R /proc --output <span style=color:#b44>&#34;TARGET,SOURCE,FSTYPE&#34;</span>
 
-TARGET                     SOURCE                    FSTYPE    
-/proc                      proc                      proc      
+TARGET                     SOURCE                    FSTYPE
+/proc                      proc                      proc
 ├─/proc/cpuinfo            lxcfs<span style=color:#666>[</span>/proc/cpuinfo<span style=color:#666>]</span>      fuse.lxcfs
 ├─/proc/diskstats          lxcfs<span style=color:#666>[</span>/proc/diskstats<span style=color:#666>]</span>    fuse.lxcfs
 ├─/proc/meminfo            lxcfs<span style=color:#666>[</span>/proc/meminfo<span style=color:#666>]</span>      fuse.lxcfs
 ├─/proc/stat               lxcfs<span style=color:#666>[</span>/proc/stat<span style=color:#666>]</span>         fuse.lxcfs
 ├─/proc/uptime             lxcfs<span style=color:#666>[</span>/proc/uptime<span style=color:#666>]</span>       fuse.lxcfs
-└─/proc/sys/fs/binfmt_misc proc<span style=color:#666>[</span>/sys/fs/binfmt_misc<span style=color:#666>]</span> proc      
-</code></pre></div><p>Two ways to solve this:</p><ol><li>you can change the lxd configuration so that you won&rsquo;t get a permission denied anymore</li></ol><p>to do that you open crosh (ctlr+alt+t) and</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#080;font-style:italic># enter the termina vm</span>
+└─/proc/sys/fs/binfmt_misc proc<span style=color:#666>[</span>/sys/fs/binfmt_misc<span style=color:#666>]</span> proc
+</code></pre></div><p><strong>Two ways to solve this</strong></p><ol><li>you can change the lxd configuration so that you won&rsquo;t get a permission denied anymore</li></ol><p>to do that you open crosh (ctlr+alt+t) and</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#080;font-style:italic># enter the termina vm</span>
 vsh termina
 <span style=color:#080;font-style:italic># allow nesting containers</span>
 lxc config <span style=color:#a2f>set</span> penguin security.nesting <span style=color:#a2f>true</span>
