@@ -3,7 +3,7 @@
 <a href=/tags>Tags</a>
 <a href=/about>About</a></nav><main class=main><section id=single><h1 class=title>&lt;ChromeOS: nested, unprivileged, podman></h1><div class=tip><span>Mar 24, 2021 15:17</span>
 <span class=split>·</span>
-<span>211 words</span>
+<span>212 words</span>
 <span class=split>·</span>
 <span>1 minute read</span></div><div class=content><p>lxc config set penguin security.nesting true</p><p>using the <a href=https://podman.io/getting-started/installation target=_blank rel=noopener>install instructions
 </a>you will probably run into this error</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>podman run --rm 2f4357dd9647 /bin/echo <span style=color:#b44>&#34;fubar&#34;</span>
@@ -18,7 +18,7 @@ TARGET                     SOURCE                    FSTYPE
 ├─/proc/stat               lxcfs<span style=color:#666>[</span>/proc/stat<span style=color:#666>]</span>         fuse.lxcfs
 ├─/proc/uptime             lxcfs<span style=color:#666>[</span>/proc/uptime<span style=color:#666>]</span>       fuse.lxcfs
 └─/proc/sys/fs/binfmt_misc proc<span style=color:#666>[</span>/sys/fs/binfmt_misc<span style=color:#666>]</span> proc
-</code></pre></div><p><strong>Two ways to solve this</strong></p><ol><li>you can change the lxd configuration so that you won&rsquo;t get a permission denied anymore</li></ol><p>to do that you open crosh (ctlr+alt+t) and</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#080;font-style:italic># enter the termina vm</span>
+</code></pre></div><p><strong>Two ways to solve this</strong></p><ol><li>you can change the penguin container configuration so that you won&rsquo;t get a permission denied anymore</li></ol><p>to do that you open crosh (ctlr+alt+t) and</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#080;font-style:italic># enter the termina vm</span>
 vsh termina
 <span style=color:#080;font-style:italic># allow nesting containers</span>
 lxc config <span style=color:#a2f>set</span> penguin security.nesting <span style=color:#a2f>true</span>
