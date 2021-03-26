@@ -1,11 +1,11 @@
-<!doctype html><html lang=en-us><head><title>&lt; podman rootless in Crostini Chrome OS > | Site</title><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,minimum-scale=1"><meta name=description content="blog"><meta name=generator content="Hugo 0.82.0"><meta name=ROBOTS content="NOINDEX, NOFOLLOW"><link rel=stylesheet href=/css/style.css><link rel="shortcut icon" href=/images/favicon.ico type=image/x-icon><link href=/index.xml rel=alternate type=application/rss+xml title=Site><link href=/index.xml rel=feed type=application/rss+xml title=Site></head><body><nav class=navigation><a href=/><span class=arrow>←</span>Home</a>
+<!doctype html><html lang=en-us><head><title>&lt;ChromeOS: nested, unprivileged, podman> | Site</title><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><meta name=viewport content="width=device-width,minimum-scale=1"><meta name=description content="blog"><meta name=generator content="Hugo 0.82.0"><meta name=ROBOTS content="NOINDEX, NOFOLLOW"><link rel=stylesheet href=/css/style.css><link rel="shortcut icon" href=/images/favicon.ico type=image/x-icon><link href=/index.xml rel=alternate type=application/rss+xml title=Site><link href=/index.xml rel=feed type=application/rss+xml title=Site></head><body><nav class=navigation><a href=/><span class=arrow>←</span>Home</a>
 <a href=/posts>Archive</a>
 <a href=/tags>Tags</a>
-<a href=/about>About</a></nav><main class=main><section id=single><h1 class=title>&lt; podman rootless in Crostini Chrome OS ></h1><div class=tip><span>Mar 24, 2021 15:17</span>
+<a href=/about>About</a></nav><main class=main><section id=single><h1 class=title>&lt;ChromeOS: nested, unprivileged, podman></h1><div class=tip><span>Mar 24, 2021 15:17</span>
 <span class=split>·</span>
-<span>218 words</span>
+<span>213 words</span>
 <span class=split>·</span>
-<span>2 minute read</span></div><div class=content><p>Error: mount proc to /proc: Operation not permitted: OCI permission denied</p><p>Following the install instructions at <a href=https://podman.io/getting-started/installation>https://podman.io/getting-started/installation</a> you will probably run into this error</p><pre><code>podman run --rm 2f4357dd9647 /bin/echo &quot;fubar&quot;
+<span>1 minute read</span></div><div class=content><p>lxc config set penguin security.nesting true</p><p>Following the install instructions at <a href=https://podman.io/getting-started/installation>https://podman.io/getting-started/installation</a> you will probably run into this error</p><pre><code>podman run --rm 2f4357dd9647 /bin/echo &quot;fubar&quot;
 Error: mount `proc` to `/proc`: Operation not permitted: OCI permission denied
 </code></pre><p>Why is that? Because there are lxcfs mount points below /proc and kernel does not allow it.</p><pre><code>findmnt -R /proc --output &quot;TARGET,SOURCE,FSTYPE&quot;
     
@@ -17,13 +17,14 @@ TARGET                     SOURCE                    FSTYPE
 ├─/proc/stat               lxcfs[/proc/stat]         fuse.lxcfs
 ├─/proc/uptime             lxcfs[/proc/uptime]       fuse.lxcfs
 └─/proc/sys/fs/binfmt_misc proc[/sys/fs/binfmt_misc] proc      
-</code></pre><p>2 possible solutions:</p><ol><li>you can change the lxd configuration so that you won&rsquo;t get a permission denied anymore</li></ol><p>to do that you open crosh (ctlr+alt+t) and</p><pre><code># enter the termina vm
+</code></pre><h1 id=2-possible-solutions>2 possible solutions: <a href=#2-possible-solutions class=anchor>🔗</a></h1><h2 id=1-you-can-change-the-lxd-configuration-so-that-you-wont-get-a-permission-denied-anymore>1. you can change the lxd configuration so that you won&rsquo;t get a permission denied anymore <a href=#1-you-can-change-the-lxd-configuration-so-that-you-wont-get-a-permission-denied-anymore class=anchor>🔗</a></h2><p>to do that you open crosh (ctlr+alt+t) and</p><pre><code># enter the termina vm
 vsh termina
-# here allow nesting containers
+# allow nesting containers
 lxc config set penguin security.nesting true
-# and restart penguin lxc container
+# restart penguin lxc container
 lxc restart penguin
-</code></pre><p>as proposed here: <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1087937">https://bugs.chromium.org/p/chromium/issues/detail?id=1087937</a></p><ol start=2><li><p>umount</p><p>sudo umount /proc/{cpuinfo,diskstats,meminfo,stat,uptime}</p></li></ol><p>and in order to make that change in the user namespace aswell you can tell podman to redo the namespace this way</p><pre><code>podman system migrate
+</code></pre><p>as proposed here: <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1087937">https://bugs.chromium.org/p/chromium/issues/detail?id=1087937</a></p><h2 id=2-umount>2. umount <a href=#2-umount class=anchor>🔗</a></h2><pre><code>sudo umount /proc/{cpuinfo,diskstats,meminfo,stat,uptime}
+</code></pre><p>and in order to make that change in the user namespace aswell you can tell podman to redo the namespace this way</p><pre><code>podman system migrate
 </code></pre><p>to test that you do</p><pre><code>❯ podman unshare # join user namespace
 
 user in ~
